@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>SACRIFICE</title>
+
+  <!-- Иконка: рыцарь + колючая проволока (base64) -->
+  <link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAHKklEQVR4nO3dW3LbOhJAUbmo+9+yP07VZGxL4oNAo7vXU5nL8bUlNg4aFKlI//379+8/wH/139UDgHEJAHgkAMCTAAAPvvz8/Pl8fv4HgH/07wD4/f39+e//AOBfCAAYJgBgkACAYQIARgkAGOUOAIx6fX39+fkPAP6FAICBAgBGCAAYIQBghACAQQIAxggAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAgFECAMYIABglAGCUAIBRAgBGCQAYIwBglACAUQIARgkAGCUAYJQAg......">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SACRIFICE">
+  <meta name="theme-color" content="#0d0d10">
+
+  <style>
+    :root {
+      --btn-save: #2e8b57;
+      --btn-sold: #b22222;
+      --btn-edit: #b8860b;
+      --btn-delete: #555;
+      --btn-export: #1e90ff;
+      --btn-nav: #6a5acd;
+      --btn-filter: #d2691e;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 16px;
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.theme-dark {
+      background: #0f0f12;
+      color: #e0e0ff;
+    }
+    body.theme-light {
+      background: #ffffff;
+      color: #1d1d1f;
+    }
+
+    h2 { text-align: center; margin: 16px 0; }
+
+    .btn {
+      display: block; width: 100%; padding: 12px;
+      margin: 8px 0; border: none; border-radius: 10px;
+      color: white; font-size: 16px; font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-save { background: var(--btn-save); }
+    .btn-sold { background: var(--btn-sold); }
+    .btn-edit { background: var(--btn-edit); }
+    .btn-delete { background: var(--btn-delete); }
+    .btn-export { background: var(--btn-export); }
+    .btn-nav { background: var(--btn-nav); }
+    .btn-filter { background: var(--btn-filter); }
+
+    .btn:active {
+      opacity: 0.9;
+      transform: scale(0.98);
+    }
+
+    .backup-buttons, .sale-filter-controls {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .backup-buttons .btn, .sale-filter-controls .btn {
+      flex: 1; min-width: 120px;
+    }
+
+    input, textarea, select {
+      width: 100%; padding: 12px; margin: 8px 0;
+      border: 1px solid #444; border-radius: 10px;
+      font-size: 16px;
+    }
+    body.theme-light input,
+    body.theme-light textarea,
+    body.theme-light select {
+      border-color: #ccc;
+      background: #f8f9fa;
+      color: #1d1d1f;
+    }
+
+    #video {
+      width: 100%; max-width: 400px; height: auto;
+      background: #000; border-radius: 12px;
+      display: block; margin: 0 auto;
+    }
+
+    .product-card {
+      padding: 16px; margin: 12px 0;
+      border-radius: 14px;
+      position: relative;
+    }
+    body.theme-dark .product-card { background: #16161e; border: 1px solid #2c2c3a; }
+    body.theme-light .product-card { background: #f8f9fa; border: 1px solid #ddd; }
+
+    .category-summary {
+      padding: 10px; margin: 8px 0;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .product-card img {
+      max-width: 100%; max-height: 200px;
+      border-radius: 10px; margin-top: 10px;
+      display: block;
+    }
+
+    #form, #sales-screen { display: none; }
+
+    .quantity-controls {
+      display: flex; align-items: center; gap: 8px;
+      margin: 10px 0;
+    }
+    .quantity-controls button {
+      width: 40px; height: 40px; border-radius: 50%;
+      font-size: 18px;
+    }
+    .quantity-controls span {
+      min-width: 40px; text-align: center;
+      font-size: 18px; font-weight: bold;
+    }
+
+    /* Цвета категорий для бытовой техники */
+    .cat-washing { border-left: 4px solid #1e90ff; }          /* Стиралки — синий */
+    .cat-fridge { border-left: 4px solid #4682b4; }           /* Холодильники — стальной */
+    .cat-stove { border-left: 4px solid #2f2f2f; }            /* Плиты — тёмно-серый */
+    .cat-dishwasher { border-left: 4px solid #5f9ea0; }       /* Посудомойки — кадетский */
+    .cat-hoodac { border-left: 4px solid #32cd32; }           /* Вытяжки — зелёный */
+    .cat-small { border-left: 4px solid #ff8c00; }            /* Мелкая — оранжевый */
+    .cat-built-in { border-left: 4px solid #8a2be2; }         /* Встройка — фиолетовый */
+    .cat-other { border-left: 4px solid #555; }               /* Прочее — серый */
+
+    body.theme-dark .summary-washing { background: rgba(30,144,255,0.15); border-left: 3px solid #1e90ff; }
+    body.theme-dark .summary-fridge { background: rgba(70,130,180,0.15); border-left: 3px solid #4682b4; }
+    body.theme-dark .summary-stove { background: rgba(47,47,47,0.15); border-left: 3px solid #2f2f2f; }
+    body.theme-dark .summary-dishwasher { background: rgba(95,158,160,0.15); border-left: 3px solid #5f9ea0; }
+    body.theme-dark .summary-hoodac { background: rgba(50,205,50,0.15); border-left: 3px solid #32cd32; }
+    body.theme-dark .summary-small { background: rgba(255,140,0,0.15); border-left: 3px solid #ff8c00; }
+    body.theme-dark .summary-built-in { background: rgba(138,43,226,0.15); border-left: 3px solid #8a2be2; }
+    body.theme-dark .summary-other { background: rgba(85,85,85,0.15); border-left: 3px solid #555; }
+
+    body.theme-light .summary-washing { background: #e6f0ff; border-left: 3px solid #1e90ff; }
+    body.theme-light .summary-fridge { background: #eaf5ff; border-left: 3px solid #4682b4; }
+    body.theme-light .summary-stove { background: #f0f0f0; border-left: 3px solid #2f2f2f; }
+    body.theme-light .summary-dishwasher { background: #eff5f5; border-left: 3px solid #5f9ea0; }
+    body.theme-light .summary-hoodac { background: #ebffe6; border-left: 3px solid #32cd32; }
+    body.theme-light .summary-small { background: #fff5e6; border-left: 3px solid #ff8c00; }
+    body.theme-light .summary-built-in { background: #f0e6ff; border-left: 3px solid #8a2be2; }
+    body.theme-light .summary-other { background: #f5f5f5; border-left: 3px solid #555; }
+  </style>
+</head>
+<body class="theme-dark">
+
+<h2>🛡️ SACRIFICE</h2>
+<video id="video" autoplay playsinline muted></video>
+<button id="startScan" class="btn btn-save">📸 Начать сканирование</button>
+
+<div id="form">
+  <h3>Товар: <span id="barcode-display"></span></h3>
+  <input type="text" id="brand" placeholder="Марка / Модель (Bosch WAT28400 и т.д.)">
+  <textarea id="desc" placeholder="Описание товара" rows="2"></textarea>
+  <textarea id="specs" placeholder="Характеристики (объём, класс энергопотребления, цвет...)" rows="2"></textarea>
+  <select id="category">
+    <option value="Стиральные машины">Стиральные машины</option>
+    <option value="Холодильники и морозильники">Холодильники и морозильники</option>
+    <option value="Плиты и варочные панели">Плиты и варочные панели</option>
+    <option value="Посудомоечные машины">Посудомоечные машины</option>
+    <option value="Вытяжки и кондиционеры">Вытяжки и кондиционеры</option>
+    <option value="Мелкая техника">Мелкая техника</option>
+    <option value="Встройка">Встройка</option>
+    <option value="Прочее">Прочее</option>
+  </select>
+  <input type="number" id="price" step="0.01" placeholder="Цена, ₽">
+  <div class="quantity-controls">
+    <button id="decQty" class="btn btn-edit">–</button>
+    <span id="qtyValue">1</span>
+    <button id="incQty" class="btn btn-edit">+</button>
+  </div>
+  <button id="saveProduct" class="btn btn-save">💾 Сохранить</button>
+</div>
+
+<div class="backup-buttons">
+  <button id="exportExcelBtn" class="btn btn-export">📤 Экспорт в Excel</button>
+  <button id="exportJsonBtn" class="btn btn-export">📤 Экспорт в JSON</button>
+  <button id="importJsonBtn" class="btn btn-export">📥 Импорт из JSON</button>
+</div>
+<input type="file" id="importFile" accept=".json" style="display:none;">
+
+<button id="themeToggle" class="btn btn-nav">🌓 Тема: Тёмная</button>
+<input type="text" id="searchInput" placeholder="Поиск по штрихкоду или марке..." style="width:100%; padding:10px; margin:10px 0; border-radius:8px;">
+
+<div id="categorySummary"></div>
+
+<div id="results">
+  <h3>Мои товары</h3>
+  <div id="productList"></div>
+</div>
+
+<button id="openSalesLog" class="btn btn-nav">📜 Журнал продаж</button>
+
+<div id="sales-screen">
+  <h2>📜 Журнал продаж — SACRIFICE</h2>
+  
+  <div class="sale-filter-controls">
+    <input type="date" id="dateFrom" class="btn-filter-input">
+    <input type="date" id="dateTo" class="btn-filter-input">
+    <button id="applyDateFilter" class="btn btn-filter">Применить</button>
+  </div>
+
+  <select id="saleCategoryFilter" class="btn-nav" style="width:100%; margin:10px 0;">
+    <option value="all">Все категории</option>
+    <option value="Стиральные машины">Стиральные машины</option>
+    <option value="Холодильники и морозильники">Холодильники</option>
+    <option value="Плиты и варочные панели">Плиты</option>
+    <option value="Посудомоечные машины">Посудомойки</option>
+    <option value="Вытяжки и кондиционеры">Вытяжки/Кондиционеры</option>
+    <option value="Мелкая техника">Мелкая техника</option>
+    <option value="Встройка">Встройка</option>
+    <option value="Прочее">Прочее</option>
+  </select>
+
+  <button id="exportSalesExcel" class="btn btn-export">📤 Экспорт продаж в Excel</button>
+  <button id="backToInventory" class="btn btn-nav">⬅️ Назад к товарам</button>
+  <div id="salesList" style="margin-top:20px;"></div>
+</div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+<script type="module">
+  import { BrowserMultiFormatReader } from 'https://unpkg.com/@zxing/library@0.20.0/umd/index.js';
+
+  const codeReader = new BrowserMultiFormatReader();
+  const video = document.getElementById('video');
+  const startBtn = document.getElementById('startScan');
+  const formDiv = document.getElementById('form');
+  const barcodeDisplay = document.getElementById('barcode-display');
+  let currentBarcode = '';
+  let currentEditingId = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('app_theme') || 'theme-dark';
+    document.body.className = savedTheme;
+    document.getElementById('themeToggle').textContent = `🌓 Тема: ${savedTheme === 'theme-dark' ? 'Тёмная' : 'Светлая'}`;
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('dateFrom').value = today;
+    document.getElementById('dateTo').value = today;
+
+    displayProducts();
+    updateCategorySummary();
+  });
+
+  // === СКАНИРОВАНИЕ ===
+  startBtn.onclick = async () => {
+    try {
+      await codeReader.decodeFromVideoDevice(null, video, (result, err) => {
+        if (result) {
+          currentBarcode = result.getText();
+          barcodeDisplay.textContent = currentBarcode;
+          formDiv.style.display = 'block';
+          codeReader.reset();
+          startBtn.textContent = '✅ Отсканировано';
+          startBtn.disabled = true;
+          currentEditingId = null;
+          resetForm();
+        }
+      });
+    } catch (e) {
+      alert('Ошибка камеры. Используйте Safari на iPhone.');
+    }
+  };
+
+  // === УПРАВЛЕНИЕ КОЛИЧЕСТВОМ В ФОРМЕ ===
+  let tempQuantity = 1;
+  document.getElementById('incQty').onclick = () => {
+    tempQuantity++;
+    document.getElementById('qtyValue').textContent = tempQuantity;
+  };
+  document.getElementById('decQty').onclick = () => {
+    if (tempQuantity > 1) {
+      tempQuantity--;
+      document.getElementById('qtyValue').textContent = tempQuantity;
+    }
+  };
+
+  // === СОХРАНЕНИЕ ===
+  document.getElementById('saveProduct').onclick = () => {
+    const brand = document.getElementById('brand').value.trim();
+    const desc = document.getElementById('desc').value.trim();
+    const specs = document.getElementById('specs').value.trim();
+    const category = document.getElementById('category').value;
+    const priceStr = document.getElementById('price').value.trim();
+    const price = priceStr ? parseFloat(priceStr) : null;
+    const quantity = tempQuantity;
+
+    if (!brand && !desc) {
+      alert('Введите хотя бы марку или описание');
+      return;
+    }
+
+    const product = {
+      id: currentEditingId || Date.now().toString(),
+      barcode: currentBarcode,
+      brand,
+      desc,
+      specs,
+      category,
+      price,
+      quantity,
+      createdAt: currentEditingId ? null : Date.now(),
+      lastUpdated: Date.now()
+    };
+
+    const products = JSON.parse(localStorage.getItem('my_products') || '[]');
+    if (currentEditingId) {
+      const index = products.findIndex(p => p.id === currentEditingId);
+      if (index !== -1) products[index] = product;
+    } else {
+      if (!product.createdAt) product.createdAt = Date.now();
+      products.push(product);
+    }
+    localStorage.setItem('my_products', JSON.stringify(products));
+
+    alert('Сохранено!');
+    resetForm();
+    hideForm();
+    displayProducts();
+    updateCategorySummary();
+  };
+
+  function resetForm() {
+    document.getElementById('brand').value = '';
+    document.getElementById('desc').value = '';
+    document.getElementById('specs').value = '';
+    document.getElementById('category').value = 'Стиральные машины';
+    document.getElementById('price').value = '';
+    tempQuantity = 1;
+    document.getElementById('qtyValue').textContent = '1';
+  }
+
+  function hideForm() {
+    formDiv.style.display = 'none';
+    startBtn.disabled = false;
+    startBtn.textContent = '📸 Начать сканирование';
+  }
+
+  // === ОТОБРАЖЕНИЕ ТОВАРОВ ===
+  function displayProducts(filter = '') {
+    const list = document.getElementById('productList');
+    const products = JSON.parse(localStorage.getItem('my_products') || '[]');
+    products.sort((a, b) => b.lastUpdated - a.lastUpdated);
+    
+    const filtered = filter 
+      ? products.filter(p => 
+          p.barcode.includes(filter) || 
+          (p.brand && p.brand.toLowerCase().includes(filter.toLowerCase()))
+        )
+      : products;
+
+    list.innerHTML = filtered.map(p => {
+      const catClass = getCategoryClass(p.category);
+      const priceStr = p.price !== null && p.price !== undefined 
+        ? (p.price.toLocaleString('ru-RU') + ' ₽') 
+        : 'Цена не указана';
+      
+      return `
+        <div class="product-card ${catClass}">
+          <strong>ШК:</strong> ${p.barcode}<br>
+          ${p.brand ? `<strong>Марка:</strong> ${p.brand}<br>` : ''}
+          ${p.desc ? `<div>${p.desc}</div>` : ''}
+          ${p.specs ? `<div style="color:#aaa;font-size:14px;">${p.specs}</div>` : ''}
+          <div><strong>Категория:</strong> ${p.category}</div>
+          <div><strong>Цена:</strong> ${priceStr}</div>
+          <div class="quantity-controls" style="justify-content:flex-start; margin:10px 0;">
+            <button onclick="changeQuantity('${p.id}', -1)" class="btn btn-edit" style="width:30px;height:30px;font-size:14px;">–</button>
+            <span style="min-width:30px;text-align:center;">${p.quantity}</span>
+            <button onclick="changeQuantity('${p.id}', 1)" class="btn btn-edit" style="width:30px;height:30px;font-size:14px;">+</button>
+          </div>
+          <button onclick="markAsSold('${p.id}')" class="btn btn-sold" style="width:auto;margin:5px 0;">📦 Продано</button>
+          <button onclick="editProduct('${p.id}')" class="btn btn-edit" style="width:auto;margin:5px 0;">✏️ Редактировать</button>
+          <button onclick="deleteProduct('${p.id}')" class="btn btn-delete" style="width:auto;margin:5px 0;">🗑️ Удалить</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // === ГЛОБАЛЬНЫЕ ФУНКЦИИ (доступны из HTML) ===
+  window.changeQuantity = (id, delta) => {
+    const products = JSON.parse(localStorage.getItem('my_products') || '[]');
+    const product = products.find(p => p.id === id);
+    if (product) {
+      product.quantity = Math.max(1, product.quantity + delta);
+      product.lastUpdated = Date.now();
+      localStorage.setItem('my_products', JSON.stringify(products));
+      displayProducts(document.getElementById('searchInput').value);
+      updateCategorySummary();
+    }
+  };
+
+  window.markAsSold = (id) => {
+    const products = JSON.parse(localStorage.getItem('my_products') || '[]');
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    const currentQty = product.quantity;
+    const soldStr = prompt(`Сколько штук продано?\nВ наличии: ${currentQty}`, '1');
+    if (soldStr === null) return;
+
+    const sold = parseInt(soldStr);
+    if (isNaN(sold) || sold < 1) {
+      alert('Введите корректное число ≥ 1');
+      return;
+    }
+    if (sold > currentQty) {
+      alert('Нельзя продать больше, чем есть в наличии!');
+      return;
+    }
+
+    product.quantity = currentQty - sold;
+    product.lastUpdated = Date.now();
+    localStorage.setItem('my_products', JSON.stringify(products));
+
+    const saleRecord = {
+      id: Date.now().toString(),
+      barcode: product.barcode,
+      brand: product.brand,
+      desc: product.desc,
+      category: product.category,
+      price: product.price,
+      quantity: sold,
+      total: product.price ? product.price * sold : null,
+      timestamp: Date.now()
+    };
+    const sales = JSON.parse(localStorage.getItem('sales_log') || '[]');
+    sales.unshift(saleRecord);
+    localStorage.setItem('sales_log', JSON.stringify(sales));
+
+    displayProducts();
+    updateCategorySummary();
+    alert(`Продано ${sold} шт.`);
+  };
+
+  window.editProduct = (id) => {
+    const products = JSON.parse(localStorage.getItem('my_products') || '[]');
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    currentBarcode = product.barcode;
+    barcodeDisplay.textContent = currentBarcode;
+    document.getElementById('brand').value = product.brand || '';
+    document.getElementById('desc').value = product.desc || '';
+    document.getElementById('specs').value = product.specs || '';
+    document.getElementById('category').value = product.category;
+    document.getElementById('price').value = product.price !== undefined && product.price !== null ? product.price : '';
+    tempQuantity = product.quantity;
+    document.getElementById('qtyValue').textContent = product.quantity;
+    
+    currentEditingId = product.id;
+    formDiv.style.display = 'block';
+    startBtn.disabled = true;
+    startBtn.textContent = '✅ Редактирование';
+  };
+
+  window.deleteProduct = (id) => {
+    if (!confirm('Удалить товар? Действие нельзя отменить.')) return;
+    
+    let products = JSON.parse(localStorage.getItem('my_products') || '[]');
+    products = products.filter(p => p.id !== id);
+    localStorage.setItem('my_products', JSON.stringify(products));
+    
+    displayProducts();
+    updateCategorySummary();
+  };
+
+  // === ПОИСК ===
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    displayProducts(e.target.value.trim());
+  });
+
+  // === КАТЕГОРИИ ===
+  function getCategoryClass(category) {
+    if (!category) return 'cat-other';
+    if (category.includes('Стиральные')) return 'cat-washing';
+    if (category.includes('Холодильники')) return 'cat-fridge';
+    if (category.includes('Плиты') || category.includes('варочные')) return 'cat-stove';
+    if (category.includes('Посудомоечные')) return 'cat-dishwasher';
+    if (category.includes('Вытяжки') || category.includes('кондиционеры')) return 'cat-hoodac';
+    if (category.includes('Мелкая')) return 'cat-small';
+    if (category === 'Встройка') return 'cat-built-in';
+    return 'cat-other';
+  }
+
+  function getCategorySummaryClass(category) {
+    if (!category) return 'summary-other';
+    if (category.includes('Стиральные')) return 'summary-washing';
+    if (category.includes('Холодильники')) return 'summary-fridge';
+    if (category.includes('Плиты') || category.includes('варочные')) return 'summary-stove';
+    if (category.includes('Посудомоечные')) return 'summary-dishwasher';
+    if (category.includes('Вытяжки') || category.includes('кондиционеры')) return 'summary-hoodac';
+    if (category.includes('Мелкая')) return 'summary-small';
+    if (category === 'Встройка') return 'summary-built-in';
+    return 'summary-other';
+  }
+
+  function updateCategorySummary() {
+    const products = JSON.parse(localStorage.getItem('my_products') || '[]');
+    const totals = {};
+    products.forEach(p => {
+      const cat = p.category || 'Прочее';
+      totals[cat] = (totals[cat] || 0) + (p.quantity || 0);
+    });
+
+    const summaryDiv = document.getElementById('categorySummary');
+    summaryDiv.innerHTML = Object.entries(totals)
+      .map(([cat, total]) => 
+        `<div class="category-summary ${getCategorySummaryClass(cat)}">
+          <strong>${cat}</strong> — всего: <span>${total}</span> ед.
+        </div>`
+      ).join('');
+  }
+
+  // === ТЕМА ===
+  document.getElementById('themeToggle').onclick = () => {
+    const isDark = document.body.classList.contains('theme-dark');
+    document.body.className = isDark ? 'theme-light' : 'theme-dark';
+    localStorage.setItem('app_theme', isDark ? 'theme-light' : 'theme-dark');
+    document.getElementById('themeToggle').textContent = 
+      `🌓 Тема: ${isDark ? 'Светлая' : 'Тёмная'}`;
+  };
+
+  // === ЭКСПОРТ В EXCEL ===
+  document.getElementById('exportExcelBtn').onclick = () => {
+    const products = JSON.parse(localStorage.getItem('my_products') || '[]');
+    if (products.length === 0) {
+      alert('Нет данных для экспорта');
+      return;
+    }
+
+    const data = products.map(p => ({
+      'Штрихкод': p.barcode,
+      'Марка / Модель': p.brand || '',
+      'Описание': p.desc || '',
+      'Характеристики': p.specs || '',
+      'Категория': p.category || '',
+      'Цена, ₽': p.price || '',
+      'Количество': p.quantity || 0,
+      'Дата обновления': new Date(p.lastUpdated).toLocaleString('ru-RU')
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Товары");
+    XLSX.writeFile(wb, "инвентаризация_SACRIFICE.xlsx");
+  };
+
+  document.getElementById('exportSalesExcel').onclick = () => {
+    const sales = JSON.parse(localStorage.getItem('sales_log') || '[]');
+    if (sales.length === 0) {
+      alert('Нет данных о продажах');
+      return;
+    }
+
+    const data = sales.map(s => ({
+      'Дата продажи': new Date(s.timestamp).toLocaleString('ru-RU'),
+      'Штрихкод': s.barcode,
+      'Марка / Модель': s.brand || '',
+      'Описание': s.desc || '',
+      'Категория': s.category || '',
+      'Продано, шт.': s.quantity,
+      'Цена, ₽': s.price || '',
+      'Сумма, ₽': s.total || ''
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Продажи");
+    XLSX.writeFile(wb, "журнал_продаж_SACRIFICE.xlsx");
+  };
+
+  // === ЭКСПОРТ/ИМПОРТ JSON ===
+  document.getElementById('exportJsonBtn').onclick = () => {
+    const data = {
+      products: JSON.parse(localStorage.getItem('my_products') || '[]'),
+      sales: JSON.parse(localStorage.getItem('sales_log') || '[]')
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'SACRIFICE_backup.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  document.getElementById('importJsonBtn').onclick = () => {
+    document.getElementById('importFile').click();
+  };
+  document.getElementById('importFile').onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+        if (data.products) {
+          localStorage.setItem('my_products', JSON.stringify(data.products));
+        }
+        if (data.sales) {
+          localStorage.setItem('sales_log', JSON.stringify(data.sales));
+        }
+        alert('Данные успешно импортированы!');
+        displayProducts();
+        updateCategorySummary();
+      } catch (err) {
+        alert('Ошибка при импорте файла');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  // === ЖУРНАЛ ПРОДАЖ ===
+  document.getElementById('openSalesLog').onclick = () => {
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('sales-screen').style.display = 'block';
+    displaySales();
+  };
+
+  document.getElementById('backToInventory').onclick = () => {
+    document.getElementById('sales-screen').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+  };
+
+  document.getElementById('applyDateFilter').onclick = () => {
+    displaySales();
+  };
+
+  function displaySales() {
+    const sales = JSON.parse(localStorage.getItem('sales_log') || '[]');
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    const categoryFilter = document.getElementById('saleCategoryFilter').value;
+
+    const filtered = sales.filter(s => {
+      const saleDate = new Date(s.timestamp);
+      const from = dateFrom ? new Date(dateFrom) : null;
+      const to = dateTo ? new Date(dateTo) : null;
+      
+      let inDate = true;
+      if (from) inDate = inDate && saleDate >= from.setHours(0,0,0,0);
+      if (to) inDate = inDate && saleDate <= to.setHours(23,59,59,999);
+      
+      let inCategory = true;
+      if (categoryFilter !== 'all') {
+        inCategory = s.category === categoryFilter;
+      }
+      
+      return inDate && inCategory;
+    });
+
+    filtered.sort((a, b) => b.timestamp - a.timestamp);
+
+    const list = document.getElementById('salesList');
+    list.innerHTML = filtered.map(s => {
+      const priceStr = s.price ? s.price.toLocaleString('ru-RU') + ' ₽' : '—';
+      const totalStr = s.total ? s.total.toLocaleString('ru-RU') + ' ₽' : '—';
+      return `
+        <div class="product-card">
+          <div><strong>${new Date(s.timestamp).toLocaleString('ru-RU')}</strong></div>
+          <div><strong>ШК:</strong> ${s.barcode}</div>
+          ${s.brand ? `<div><strong>Марка:</strong> ${s.brand}</div>` : ''}
+          ${s.desc ? `<div>${s.desc}</div>` : ''}
+          <div><strong>Категория:</strong> ${s.category || '—'}</div>
+          <div>Продано: ${s.quantity} шт. × ${priceStr} = <strong>${totalStr}</strong></div>
+        </div>
+      `;
+    }).join('');
+  }
+</script>
+
+</body>
+</html>
